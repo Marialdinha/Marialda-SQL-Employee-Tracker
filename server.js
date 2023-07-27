@@ -71,8 +71,7 @@ async function init(){
 
 // View all departments
 const viewAllDepartments = () =>{
-  const query = `SELECT department_id as "Department ID",  
-                        department_name as "Department Name"
+  const query = `SELECT  department_name as "Department Name"
                  FROM department;`;
   db.query(query, function (err, results) {
   console.table(results);
@@ -106,7 +105,7 @@ const addDepartment = () =>{
   ])
   .then((answer) => {
 
-    
+
   })
           
   }
