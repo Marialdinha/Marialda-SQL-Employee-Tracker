@@ -2,6 +2,9 @@
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
 
+// Variables
+let dash = "-";
+
 // Connect to database
 const db = mysql.createConnection(
   {
@@ -9,68 +12,129 @@ const db = mysql.createConnection(
     user: "root",
     database: "employee_db"
   },
-  console.info("Connected to the employee_db database.")
+  console.info(dash.repeat(20)),
+  console.info("Connected to the employee_db database."),
+  console.info(dash.repeat(20)),
 );
 
-// Initialize Function
+// Function that starts the application
 async function init(){
  const mainMenu = await inquirer.prompt([
   {
     type: "list",
     name: "choices",
-    message: "Main Menu",
+    message: "Please, choose an option:",
     choices: [
-          {choice: "View All Departments", value: "viewAllDepartments" },
-          {choice: "View All Roles", value: "viewAllRoles" },
-          {choice: "View All Employees", value: "viewAllEmployees" },
-          {choice: "Add a Department", value: "addDepartment" },
-          {choice: "Add a Role", value: "addRole" },
-          {choice: "Add an Employee", value: "addEmployee" },
-          {choice: "Update an Employee Role", value: "updateEmployeeRole" },
+          {value: "View All Departments" },
+          {value: "View All Roles"},
+          {value: "View All Employees" },
+          {value: "Add a Department" },
+          {value: "Add a Role" },
+          {value: "Add an Employee" },
+          {value: "Update an Employee Role"},
+          {value: "View Employees by Manager"},
+          {value: "Quit"},
           ]
   }
 ])
-
-  console.log(mainMenu.choices);
   switch (mainMenu.choices){
-    case "viewAllDepartments" : 
+    case "View All Departments" : 
       viewAllDepartments();
       break;
-    case "viewAllRoles" : 
+    case  "View All Roles" : 
       viewAllRoles();
       break;
-    case "viewAllEmployees" : 
-       viewAllEmployees();
+    case "View All Employees" : 
+      viewAllEmployees();
       break; 
-    case "addDepartment" : 
-       addDepartment();
-     break;       
+    case "Add a Department" : 
+      addDepartment();
+      break;  
+    case "Add a Role" : 
+      addRole();
+      break;  
+    case "Add an Employee" : 
+      addEmployee();
+      break;  
+    case "Update an Employee Role" : 
+      updateEmployeeRole();
+      break;     
+    case "View Employees by Manager" : 
+      employeesByManager();
+      break;   
+    case "Quit" : 
+      quit();
+      break;         
   }
+  
 }
-   
+
+// View all departments
 const viewAllDepartments = () =>{
-  db.query('SELECT * FROM department', function (err, results) {
-  console.info("Lst of Departments");
-  console.info(results);
+  const query = `SELECT department_id as "Department ID",  
+                        department_name as "Department Name"
+                 FROM department;`;
+  db.query(query, function (err, results) {
+  console.table(results);
+  init();
 }) 
 }
 
+// View all roles
 const viewAllRoles = () =>{
   db.query('SELECT * FROM role', function (err, results) {
-  console.info("Lst of Roles");
-  console.info(results);
+  console.table(results);
+  init();
 }) 
 }
 
+// View all employees
 const viewAllEmployees = () =>{
   db.query('SELECT * FROM employee', function (err, results) {
-  console.info("Lst of Employees");
-  console.info(results);
+  console.table(results);
+  init();
 }) 
 }
 
 const addDepartment = () =>{
+  const department = inquirer.prompt([
+    {
+      type: "input",
+      name: "departmentName",
+      message: "Please, enter a department name:",
+    }
+  ])
+  .then((answer) => {
 
+    
+  })
+          
+  }
+ 
+
+const addRole = () =>{
+  init()
 }
 
+const addEmployee = () =>{
+  init();
+}
+
+
+const updateEmployeeRole = () =>{
+  init();
+}
+
+const employeesByManager = () =>{
+  init();
+}
+
+const quit = () =>{
+  db.end();
+  console.info(dash.repeat(20));
+  console.info("I will see you later!");
+  console.info(dash.repeat(20));
+}
+
+// Call Init function
 init();

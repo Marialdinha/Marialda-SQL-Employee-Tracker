@@ -14,11 +14,11 @@ VALUES (1, "Sales Person", 100000,4 ),
        (7, "Accountant",100000, 2),
        (8, "Account Manageer",200000, 2);
 
-INSERT INTO employee ( employee_id, firt_name,last_name, role_id, manager_id)
-VALUES  (1,"John", "Smith", 5, NULL ),
-        (2,"Mary", "Smith", 6, 1 ),
-        (3,"Sophia", "Brown", 6,1 ),
-        (4,"Oliver", "Mo", 8, 2 ),
-        (5,"Kevin", "Chan", 7, 2 ),
-        (6,"Mary", "Soares", 1, 3),
-        (7,"Mike", "Rodriguez", 2, 3 );
+INSERT INTO employee ( firt_name,last_name, role_id, manager_id)
+VALUES  ("John", "Smith", 5, NULL ),
+        ("Mary", "Smith", 6, 1 ),
+        ("Sophia", "Brown", 6,1 ),
+        ("Oliver", "Mo", 8, 2 ),
+        ("Kevin", "Chan", 7, 2 ),
+        ("Mary", "Soares", 1, 3),
+        ("Mike", "Rodriguez", 2, 3 );
