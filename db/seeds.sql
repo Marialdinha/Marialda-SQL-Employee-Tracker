@@ -14,7 +14,7 @@ VALUES ("Sales Person", 100000,4 ),
        ("Accountant",100000, 2),
        ("Account Manageer",200000, 2);
 
-INSERT INTO employee ( firt_name,last_name, role_id, manager_id)
+INSERT INTO employee ( first_name,last_name, role_id, manager_id)
 VALUES  ("John", "Smith", 5, NULL ),
         ("Mary", "Smith", 6, 1 ),
         ("Sophia", "Brown", 6,1 ),

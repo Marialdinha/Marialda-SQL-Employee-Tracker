@@ -66,14 +66,15 @@ async function init(){
       quit();
       break;         
   }
-  
 }
 
 // View all departments
 const viewAllDepartments = () =>{
-  const query = `SELECT  department_name as "Department Name"
+  const query = `SELECT  department_id as "Department ID",
+                        department_name as "Department Name"
                  FROM department;`;
   db.query(query, function (err, results) {
+  if (err) throw err;
   console.table(results);
   init();
 }) 
@@ -81,7 +82,15 @@ const viewAllDepartments = () =>{
 
 // View all roles
 const viewAllRoles = () =>{
-  db.query('SELECT * FROM role', function (err, results) {
+  const query = `SELECT role_id as "Role ID",
+                        title as "Role Title",   
+                        salary as "Role Salary",   
+                        department_name as "Department Name"
+                 FROM role a
+                 left join department b
+                 on a.department_id = b.department_id;`;
+  db.query(query, function (err, results) {
+  if (err) throw err;
   console.table(results);
   init();
 }) 
@@ -89,7 +98,18 @@ const viewAllRoles = () =>{
 
 // View all employees
 const viewAllEmployees = () =>{
-  db.query('SELECT * FROM employee', function (err, results) {
+  const query = `SELECT a.employee_id as "Employee ID",
+                        CONCAT(a.first_name, " ", a.last_name) as "Employee Name",
+                        CONCAT(d.first_name, " ", d.last_name) as "Manager", 
+                        title as "Role", 
+                        department_name as "Department",
+                        salary as "Salary"
+                 FROM employee a
+                 left join role b on a.role_id = b.role_id
+                 left join department c on b.department_id = c.department_id
+                 left join employee d on a.manager_id = d.employee_id;`;
+  db.query(query, function (err, results) {
+  if (err) throw err;
   console.table(results);
   init();
 }) 
@@ -104,8 +124,15 @@ const addDepartment = () =>{
     }
   ])
   .then((answer) => {
-
-
+     const query = `INSERT INTO department (department_name)
+                    VALUES ("${answer.departmentName}");`;
+     db.query(query, function (err, results) {
+      if (err) throw err;
+      console.info(dash.repeat(20)),
+      console.info(`Department ${answer.departmentName} inserted into table`),
+      console.info(dash.repeat(20)),
+      viewAllDepartments(); 
+    }) 
   })
           
   }
