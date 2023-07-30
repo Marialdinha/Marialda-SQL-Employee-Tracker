@@ -32,7 +32,6 @@ async function init(){
           {value: "Add a Role" },
           {value: "Add an Employee" },
           {value: "Update an Employee Role"},
-          {value: "View Employees by Manager"},
           {value: "Quit"},
           ]
   }
@@ -46,7 +45,7 @@ async function init(){
       break;
     case "View All Employees" : 
       viewAllEmployees();
-      break; 
+      break;  
     case "Add a Department" : 
       addDepartment();
       break;  
@@ -59,9 +58,6 @@ async function init(){
     case "Update an Employee Role" : 
       updateEmployeeRole();
       break;     
-    case "View Employees by Manager" : 
-      employeesByManager();
-      break;   
     case "Quit" : 
       quit();
       break;         
@@ -70,7 +66,7 @@ async function init(){
 
 // View all departments
 const viewAllDepartments = () =>{
-  const query = `SELECT  department_id as "Department ID",
+  const query = `SELECT department_id as "Department ID",
                         department_name as "Department Name"
                  FROM department;`;
   db.query(query, function (err, results) {
@@ -115,6 +111,7 @@ const viewAllEmployees = () =>{
 }) 
 }
 
+// Add a department
 const addDepartment = () =>{
   const department = inquirer.prompt([
     {
@@ -133,28 +130,76 @@ const addDepartment = () =>{
       console.info(dash.repeat(20)),
       viewAllDepartments(); 
     }) 
-  })
-          
+  })       
+  }
+
+  const departmentList =  () =>{
+    const query = `SELECT * FROM department;`;
+    db.query(query, function (err, results) {  
+      if (err) throw err;  
+      return results;
+    })
   }
  
-
+// Add a role
 const addRole = () =>{
-  init()
+  const query = `SELECT * FROM department;`;
+  db.query(query, function (err, results) {  
+  if (err) throw err;  
+  const role = inquirer.prompt([  
+    {
+      type: "input",
+      name: "roleName",
+      message: "Please, enter a role to be added:",
+    },
+    {
+      type: "input",
+      name: "roleSalary",
+      message: "Please, enter the salary for the role:",
+    },
+    {
+      type: "list",
+      name: "roleDepartment",
+      message: "Please, select department for this role:",
+      choices:  results.map((roleDepartment) => roleDepartment.department_name),
+    },
+  ])
+  .then((answer) => {
+    const department = results.find(
+        (roleDepartment) => roleDepartment.department_name === answer.roleDepartment
+    );
+    const query = `INSERT INTO role (title, salary, department_id)
+                   VALUES ("${answer.roleName}", ${answer.roleSalary}, ${department.department_id});`;
+    db.query(query, function (err, results) {
+     if (err) throw err;
+     console.info(dash.repeat(20)),
+     console.info(`Role ${answer.roleName} inserted into table`),
+     console.info(dash.repeat(20)),
+     viewAllRoles()
+     }) 
+    })
+  })
 }
 
+
+// Add an Employee
 const addEmployee = () =>{
+  const employee = inquirer.prompt([  
+    {
+      type: "input",
+      name: "employeeName",
+      message: "Please, enter employee first name to be added:",
+    },
   init();
 }
 
-
+// Update employee
 const updateEmployeeRole = () =>{
   init();
 }
 
-const employeesByManager = () =>{
-  init();
-}
-
+// 
+// End process
 const quit = () =>{
   db.end();
   console.info(dash.repeat(20));
