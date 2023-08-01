@@ -1,33 +1,10 @@
 // Imports
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
+const db = require("./db/connection.js")
 
 // Variables
 let dash = "-";
-
-// Connect to database
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    user: "root",
-    database: "employee_db"
-  },
-  console.info(dash.repeat(20)),
-  console.info("Connected to the employee_db database."),
-  console.info(dash.repeat(20)),
-);
-
-
-//get department list    ******************
-const departmentList = async () =>{
-  const query = await `SELECT * FROM department;`;
-  db.query(query, function (err, results) {  
-    if (err) throw err; 
-   console.log("$$$$$$$$$$$$$$$$$$$$$$$$$"); 
-   console.log(results); 
-    return results;
-  })
-}
 
 // Function that starts the application
 async function init(){
@@ -190,13 +167,6 @@ const addRole = () =>{
 
 // Add an Employee
 const addEmployee =  () =>{
-  // *********************************
-
-  // departmentList().then((response) => {
-  //   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
-  //   console.log(response)
-  // });
-  
   db.query("SELECT role_id, title  FROM role", function (err, results) {  
   if (err) throw err;  
   const roles = results.map(({ role_id, title }) => ({
@@ -236,7 +206,6 @@ const addEmployee =  () =>{
     }
   ])
   .then((answer) => {
-    // const query = `INSERT INTO employee (first_name,last_name, role_id, manager_id)
     const query = `INSERT INTO employee (first_name,last_name, role_id, manager_id)               
                    VALUES ("${answer.firstName}", "${answer.lastName}",${answer.roleId}, ${answer.managerId} );`;
     db.query(query, function (err, results) {
@@ -254,14 +223,47 @@ const addEmployee =  () =>{
 
 // Update employee role
 const updateEmployeeRole = () =>{
-  const query = `SELECT * FROM employee;`;
-  db.query(query, function (err, results) {  
-  if (err) throw err;  
-  viewAllEmployees();
-  })
+  db.query(`SELECT employee_id, CONCAT(first_name, " ", last_name) as EmployeeName, b.title  
+                   FROM employee a
+                   left join role b on a.role_id = b.role_id`
+                   , function (err, resultsEmployees) {  
+    if (err) throw err;  
+  
+      db.query("SELECT role_id, title  FROM role", function (err, resultsRole) {  
+      if (err) throw err;  
+  
+       const employee = inquirer.prompt([
+        {
+          type: "list",
+          name: "employee",
+          message: "Please, select the employee you want to update:",
+          choices: resultsEmployees.map((employee) => employee.EmployeeName),
+        },
+        {
+          type: "list",
+          name: "role",
+          message: "Please, select the new role you want to assign to the employee:",
+          choices: resultsRole.map((role) => role.title),
+
+        },
+       ])
+       .then((answer) => {
+        const employee = resultsEmployees.find((employee) => employee.EmployeeName === answer.employee);
+        const role = resultsRole.find((role) => role.title === answer.role);
+        const query = `Update employee SET role_id = ?
+                       WHERE employee_id = ?`;
+        db.query(query, [role.role_id, employee.employee_id], (err, results) => {
+            if (err) throw err;  
+            console.info(dash.repeat(20));
+            console.info(`Employee role updated`);
+            console.info(dash.repeat(20));
+            viewAllEmployees();
+        })
+       })
+      });
+    });
 }
 
-// 
 // End process
 const quit = () =>{
   db.end();
