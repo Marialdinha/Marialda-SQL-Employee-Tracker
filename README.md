@@ -14,7 +14,7 @@ This is a command-line application that manages a company's employee database, u
 
 ## Screenshot
 Initial Menu <br/>
-![initial-menu](./images/Initial_Menu.png) <br/> <br/> 
+![initial-menu](./images/Initial-Menu.png) <br/> <br/> 
 
 ## Installation 
 1 - npm initialize <br/>
